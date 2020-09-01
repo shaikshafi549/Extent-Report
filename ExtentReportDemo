@@ -1,0 +1,75 @@
+Public class ExtentReports {
+public static WebDriver driver;
+public ExtentHtmlReporter htmlReporter;
+public ExtentReports extent;
+public ExtentTest test;
+
+@BeforeTest
+public void beforeTest_Admin() throws IOException, AWTException
+	{		
+		htmlReporter = new ExtentHtmlReporter("./reports/extent.html");
+		htmlReporter.config().setEncoding("utf-8");
+		htmlReporter.config().setDocumentTitle("Automation Report");
+		htmlReporter.config().setReportName("Automation Test Results");
+		htmlReporter.config().setTheme(Theme.STANDARD);
+		
+		extent = new ExtentReports();
+		extent.attachReporter(htmlReporter);	
+		extent.setSystemInfo("Automation Tester","Shafis");
+		extent.setSystemInfo("Organization","xxxxx");
+    
+    System.setProperty("webdriver.chrome.driver", "E:\\drivers\\chromedriver.exe");
+	  driver = new ChromeDriver();
+	  driver.manage().window().maximize();
+    }
+  @AfterMethod
+	public void tearDown(ITestResult result) {
+		
+		if(result.getStatus() == ITestResult.FAILURE) {
+			test.log(Status.FAIL,  "Test Case Failed is "+result.getName());
+			test.log(Status.FAIL,  "Test Case Failed is "+result.getThrowable());
+			
+			String exceptionMessage = Arrays.toString(result.getThrowable().getStackTrace());
+			test.fail("<details>" + "<summary>" + "<b>" + "<fontcolor=" + "red>" + "Exception Occured:Click to see" + "</font>" + "</b >" + "</summary>" + 
+			exceptionMessage.replaceAll(",", "<br>") + "<details>" + " \n");			
+			String failureLogg = "TEST CASE FAILED";
+			Markup m = MarkupHelper.createLabel(failureLogg, ExtentColor.RED);
+			test.log(Status.FAIL, m);
+					
+		} else if(result.getStatus() == ITestResult.SKIP) {
+			test.log(Status.SKIP,  "Test Case Skipped is "+result.getName());
+		} else if(result.getStatus() == ITestResult.SUCCESS) {
+			test.log(Status.PASS,  "Test Case Passed is "+result.getName());
+			String methodName = result.getMethod().getMethodName();	
+			String logText = "<b>" + "TEST CASE: - "+methodName.toUpperCase()+" PASSED"+ "</b>"; 
+			Markup m = MarkupHelper.createLabel(logText, ExtentColor.GREEN);
+			test.pass(m);
+		}
+	}
+
+@Test
+	public void firstTest() throws InterruptedException 
+	{
+	test = extent.createTest("First Test");		
+	driver.get("Url");
+  String pageTitle = driver.getTitle();
+  if(pageTitle == xxxxx){
+  System.out.println("Expected title");
+  }else{
+  System.out.println("title not matching");
+	test.info("Application started");
+  test.pass("Page title test");
+  
+  @AfterTest
+	public void endReport() throws InterruptedException
+	{
+		extent.flush();
+		driver.close();
+	}
+}
+
+
+
+
+
+
